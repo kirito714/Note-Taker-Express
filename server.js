@@ -4,7 +4,7 @@ const fs = require("fs/promises");
 const express = require("express");
 const uuid = require("uuid");
 const dbFilePath = __dirname + "/db/db.json";
-let dbPath = "/db/db.json";
+
 
 // Sets up the Express App
 
@@ -65,30 +65,22 @@ app.delete("/api/notes/:id", async function (req, res) {
     const note = req.body;
     // Read the data from disk.
     const content = await fs.readFile(dbFilePath, "utf8");
+    // this method tells if true or false
     /// parse out data the data using JSON.parse
-    const data = JSON.parse(content);
+    let data = JSON.parse(content);
     // filter over the current array and then post a new array.
-    content = content.filter((notes,index,array) => notes.id !== req.params.id);
-    //add data to parsed array
-    data.push(note);
+    console.log(Array.isArray(data));
+    data = data.filter((notes, index, array) => notes.id !== req.params.id);
+
     /// waits then writes the data to the page
     await fs.writeFile(dbFilePath, JSON.stringify(data));
     //respond to front end
-    
     res.json(note);
   } catch (err) {
     res.status(512).end("server failed");
     console.log(err);
   }
 });
-// app.delete("api/notes/:id", (req, res) => {
-
-//   dbFilePath = dbFilePath.filter((note, index, array) => {
-//     return note.id !== req.params.id;
-//   });
-//   res.json(dbPath);
-
-// });
 
 
 app.listen(PORT, () => console.log(`App listening on PORT ${PORT}`));
